@@ -26,6 +26,9 @@
                 <a data-toggle="collapse" href="#saving"><i class="mdi md-money"></i> TABUNGAN</a>
                 <ul id="saving" class="nav-collapse collapse <?php echo ($this->uri->segment(2) == 'saving') ? 'in' : '' ?> nav nav-second-level">
                     <li>
+                        <a href="<?php echo site_url('admin/saving/add') ?>"><i class="mdi mdi-plus-circle"></i> Tambah Transaksi Kredit</a>
+                    </li>
+                    <li>
                         <a href="<?php echo site_url('admin/saving') ?>"><i class="mdi mdi-view-list"></i> Daftar Transaksi Kredit</a>
                     </li>
                     <li>

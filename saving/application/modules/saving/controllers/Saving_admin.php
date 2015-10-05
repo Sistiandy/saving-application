@@ -35,7 +35,7 @@ class Saving_admin extends CI_Controller {
         $data['main'] = 'saving/saving_list_kredit';
         $config['base_url'] = site_url('admin/saving/index');
         $config['uri_segment'] = 4;
-        $config['total_rows'] = count($this->Saving_model->get());
+        $config['total_rows'] = count($this->Saving_model->get(array('type' => 0)));
         $this->pagination->initialize($config);
 
         $this->load->view('admin/layout', $data);
@@ -52,7 +52,7 @@ class Saving_admin extends CI_Controller {
         $data['main'] = 'saving/saving_list_debet';
         $config['base_url'] = site_url('admin/saving/debet');
         $config['uri_segment'] = 4;
-        $config['total_rows'] = count($this->Saving_model->get());
+        $config['total_rows'] = count($this->Saving_model->get(array('type' => 1)));
         $this->pagination->initialize($config);
 
         $this->load->view('admin/layout', $data);
@@ -62,29 +62,26 @@ class Saving_admin extends CI_Controller {
     public function add($id = NULL) {
         $this->load->library('form_validation');
 
-        $this->form_validation->set_rules('saving_type', 'Tipe', 'required');
-        $this->form_validation->set_rules('user_id', 'Penabung', 'required');
+        $this->form_validation->set_rules('member_id', 'Penabung', 'required');
         $this->form_validation->set_error_delimiters('<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>', '</div>');
         $data['operation'] = is_null($id) ? 'Tambah' : 'Sunting';
 
         if ($_POST AND $this->form_validation->run() == TRUE) {
+            $param['member_id'] = $this->input->post('member_id');
+            $param['member_last_update'] = date('Y-m-d H:i:s');
+            $param['increase_balance'] = $this->input->post('saving_kredit');
+            $this->Member_model->add($param);
 
-            if ($this->input->post('saving_id')) {
-                $params['saving_id'] = $this->input->post('saving_id');
-            } else {
-                $params['saving_input_date'] = date('Y-m-d H:i:s');
-            }
-            $params['saving_date'] = ($this->input->post('saving_date')) ? $this->input->post('saving_date') : date('Y-m-d H:i:s');
+            $user = $this->Member_model->get(array('id' => $this->input->post('member_id')));
+
+            $params['saving_input_date'] = date('Y-m-d H:i:s');
+            $params['user_id'] = $this->session->userdata('user_id');
+            $params['saving_type'] = 0;
+            $params['saving_date'] = $this->input->post('saving_date');
             $params['member_id'] = $this->input->post('member_id');
             $params['saving_last_update'] = date('Y-m-d H:i:s');
-            $params['saving_type'] = $this->input->post('saving_type');
-            if ($this->input->post('saving_type') == 0) {
-                $params['saving_kredit'] = $this->input->post('jumlah');
-                $params['increase_balance'] = $this->input->post('jumlah');
-            } else {
-                $params['saving_debet'] = $this->input->post('jumlah');
-                $params['decrease_balance'] = $this->input->post('jumlah');
-            }
+            $params['saving_kredit'] = $this->input->post('saving_kredit');
+            $params['saving_balance'] = $user['member_balance'];
             $status = $this->Saving_model->add($params);
 
             // activity log

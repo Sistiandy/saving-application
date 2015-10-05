@@ -22,7 +22,7 @@ class Member_model extends CI_Model {
     // Get From Databases
     function get($params = array()) {
         $this->db->select('member.member_id, member_name, member_balance, member_full_name,
-            member_phone, member_address,
+            member_phone, member_address, member_password,
             member_input_date, member_last_update');
 
         if (isset($params['id'])) {
@@ -112,7 +112,7 @@ class Member_model extends CI_Model {
             $id = $data['member_id'];
         } else {
             if (isset($data['edit'])) {
-                $this->db->where('member_name', $data['member_name']);
+                $this->db->where('member_name', $data['name']);
                 $this->db->update('member');
                 $id = NULL;
             } else {

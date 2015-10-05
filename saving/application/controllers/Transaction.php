@@ -18,9 +18,10 @@ class Transaction extends CI_Controller {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('id', 'Id', 'trim|required|xss_clean');
         if ($this->form_validation->run()) {
+            $data['limit'] = 10;
             $data['member_id'] = $this->input->post('id', TRUE);
             if ($this->input->post('id', TRUE) == 'admin') {
-                $saving = $this->Saving_model->get();
+                $saving = $this->Saving_model->get(array('limit' => 10));
             } else {
                 $saving = $this->Saving_model->get($data);
             }
@@ -31,6 +32,7 @@ class Transaction extends CI_Controller {
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($params));
     }
+    
 
 }
 

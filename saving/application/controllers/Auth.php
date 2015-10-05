@@ -50,8 +50,11 @@ class Auth extends CI_Controller {
                     'id' => $member[0]['member_id'],
                     'name' => $member[0]['member_name'],
                     'fullname' => $member[0]['member_full_name'],
+                    'phone' => $member[0]['member_phone'],
+                    'address' => $member[0]['member_address'],
+                    'password' => $member[0]['member_password'],
                     'memberBalance' => $member[0]['member_balance'],
-                    'createdDate' => $member[0]['member_created_date'],
+                    'createdDate' => $member[0]['member_input_date'],
                 );
 
                 $params['success'] = 1;
@@ -77,12 +80,42 @@ class Auth extends CI_Controller {
             $data['member_name'] = $this->input->post('username', TRUE);
             $data['member_full_name'] = $this->input->post('fullname', TRUE);
             $data['member_password'] = sha1($this->input->post('password', TRUE));
-            $data['member_created_date'] = date('Y-m-d H:i:s');
+            $data['member_input_date'] = date('Y-m-d H:i:s');
             $this->Member_model->add($data);
 
 //            $params['data'] = array(
 //                'fullName' => $data['fullname'],
 //            );
+
+            $params['success'] = 1;
+            $params['message'] = '';
+        }
+        $this->output->set_content_type('application/json')->set_output(json_encode($params));
+    }
+
+    public function editProfile() {
+        $params['success'] = 0;
+        $params['message'] = 'Failed';
+
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('username', 'Nama', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('fullname', 'Nama Lengkap', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('phone', 'No. Handphone', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('address', 'Alamat', 'trim|required|xss_clean');
+        if ($this->form_validation->run()) {
+            $data['edit'] = TRUE;
+            $data['name'] = $this->input->post('username', TRUE);
+            $data['member_full_name'] = $this->input->post('fullname', TRUE);
+            $data['member_phone'] = $this->input->post('phone', TRUE);
+            $data['member_address'] = $this->input->post('address', TRUE);
+            $data['member_input_date'] = date('Y-m-d H:i:s');
+            $this->Member_model->add($data);
+
+            $params['data'] = array(
+                'fullname' => $data['member_full_name'],
+                'phone' => $data['member_phone'],
+                'address' => $data['member_address']
+            );
 
             $params['success'] = 1;
             $params['message'] = '';
